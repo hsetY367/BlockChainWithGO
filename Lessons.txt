@@ -1,0 +1,157 @@
+	//fmt.Println("Hello")
+	//var intNum int = 100
+	//fmt.Println(intNum)
+	////println(utf8.RuneCountInString("Hello"))
+	//printMe()
+	//numerator := 100
+	//denominator := 7
+	//
+	//var result, remainder, err = division(numerator, denominator)
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//} else if remainder == 0 {
+	//	fmt.Printf("The %v is a Factor of %v. The Result is %v", denominator, numerator, result)
+	//} else {
+	//	fmt.Printf("The Remainder is %v, The Result is %v\n", remainder, result)
+	//}
+	//
+	//var intArr []int32 = []int32{1, 2, 3}
+	//fmt.Println(intArr[1])
+	//fmt.Printf("The Length of IntArr is %v, The Capacity is %v \n", len(intArr), cap(intArr))
+	//intArr = append(intArr, 4)
+	//fmt.Println(intArr)
+	//fmt.Printf("The Length of IntArr is %v. The Capacity is %v \n", len(intArr), cap(intArr))
+	//
+	//var intSice []int32 = []int32{5, 6, 7}
+	//intArr = append(intArr, intSice...)
+	//fmt.Printf("The Length of IntArr is %v. The Capacity is %v \n", len(intArr), cap(intArr))
+	//
+	//var myMap = map[string]uint8{"Adam": 23, "Patrica": 19}
+	//fmt.Println(myMap["Adam"])
+	//fmt.Println(myMap["Patrica"])
+	//
+	//for name, age := range myMap {
+	//	fmt.Printf("Name: %v \nAge: %v \n", name, age)
+	//}
+	//
+	//var strSlice = []string{"n", "i", "c", "e", "t", "o", "m", "e", "e", "t", "y", "o", "u"}
+	//var strBuilder strings.Builder
+	//for i := range strSlice {
+	//	strBuilder.WriteString(strSlice[i])
+	//}
+	//println(strBuilder.String())
+
+
+func printMe() {
+	fmt.Println("PrintMe")
+}
+
+func division(numerator int, denominator int) (int, int, error) {
+	var err error
+	if denominator == 0 {
+		err = errors.New("cannot be divide by zero")
+		return 0, 0, err
+	}
+	return numerator / denominator, numerator % denominator, err
+}
+
+var myEngine gasEngine = gasEngine{10, 20, owner{"Peter"}}
+	var myEngine2 electricEngine = electricEngine{5, 3, owner{"James"}}
+
+	fmt.Printf("Owner: %v, MPG: %v, Gallons: %v \n", myEngine.owner.name, myEngine.mpg, myEngine.gal)
+	fmt.Printf("Owner: %v, MPKWH: %v, KWHs: %v \n", myEngine2.owner.name, myEngine2.mpkwh, myEngine2.kwh)
+
+	var destination uint8 = 200
+	canMakeIt(myEngine, destination)  // This should print "Making it."
+	canMakeIt(myEngine2, destination) // This should print "Not making it."
+
+type gasEngine struct {
+	mpg uint8
+	gal uint8
+	owner
+}
+
+type electricEngine struct {
+	mpkwh uint8
+	kwh   uint8
+	owner
+}
+
+type owner struct {
+	name string
+}
+
+func (g gasEngine) milesLeft() uint8 {
+	return g.mpg * g.gal
+}
+
+func (e electricEngine) milesLeft() uint8 {
+	return e.mpkwh * e.kwh
+}
+
+
+type engine interface {
+	milesLeft() uint8
+}
+
+func canMakeIt(e engine, miles uint8) {
+	if e.milesLeft() >= miles { // Corrected condition
+		fmt.Println("Making it.")
+	} else {
+		fmt.Println("Not making it.")
+	}
+}
+
+var m = sync.Mutex{}
+var wg = sync.WaitGroup{}
+var dbData = []string{"id1", "id2", "id3", "id4", "id5"}
+var results = []string{}
+
+
+func dbCall(i int) {
+
+	var delay = time.Duration(rand.Intn(1000)) * time.Millisecond
+	time.Sleep(delay)
+	fmt.Printf("The Result from database is: %d\n", i)
+	m.Lock()
+	results = append(results, dbData[i])
+	m.Unlock()
+	wg.Done()
+}
+
+
+	t0 := time.Now()
+	for i := 0; i < len(dbData); i++ {
+		wg.Add(1)
+		go dbCall(i)
+	}
+	wg.Wait()
+	fmt.Printf("time taken: %s\n", time.Since(t0))
+	fmt.Printf("results: %s\n", results)
+
+
+func checkChickenPrizes(website string, chickenChanel chan string) {
+	for {
+		time.Sleep(1 * time.Second)
+		var chickenPrize = rand.Float32() * 20
+		if chickenPrize <= MAX_CHICKEN_PRICE {
+			chickenChanel <- website
+			break
+		}
+	}
+}
+
+var MAX_CHICKEN_PRICE float32 = 5
+
+
+	var chickenChannel = make(chan string)
+	var websites = []string{"walmart.com", "wholeFoods.com", "costco.com"}
+	for i := range websites {
+		go checkChickenPrizes(websites[i], chickenChannel)
+	}
+	sendMessage(chickenChannel)
+
+
+func sendMessage(chickenChanel chan string) {
+	fmt.Printf("\nDeal Found at %v", <-chickenChanel)
+}
